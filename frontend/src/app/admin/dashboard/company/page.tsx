@@ -5,12 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 import Image from 'next/image';
-
 import { MdDelete } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
 import { IoSearch } from "react-icons/io5";
 
-// Define the Agency interface
 interface Agency {
   _id: string;
   name: string;
@@ -30,13 +28,17 @@ const AdminCompanyDashboard = () => {
   const API_URL = 'http://localhost:5000';
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredAgencies, setFilteredAgencies] = useState<Agency[]>([]);
   const [agencies, setAgencies] = useState<Agency[]>([]);
   const [selectedAgencyIds, setSelectedAgencyIds] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
   const [isAddCompanyModalOpen, setAddCompanyModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingAgencyId, setEditingAgencyId] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
+
   const [newCompany, setNewCompany] = useState<Agency>({
     _id: '',
     name: '',
@@ -47,24 +49,6 @@ const AdminCompanyDashboard = () => {
     rating: 0,
     description: '',
   });
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10;
-
-  useEffect(() => {
-    const filtered = agencies.filter((agency) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        agency.name.toLowerCase().includes(query) ||
-        agency.location.toLowerCase().includes(query) ||
-        agency.category.toLowerCase().includes(query) ||
-        agency.teamSize.toLowerCase().includes(query)
-      );
-    });
-    setFilteredAgencies(filtered);
-  }, [searchQuery, agencies]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -83,6 +67,16 @@ const AdminCompanyDashboard = () => {
       console.error('Error fetching agencies:', error);
     }
   };
+
+  const filteredAgencies = agencies.filter((agency) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      agency.name.toLowerCase().includes(query) ||
+      agency.location.toLowerCase().includes(query) ||
+      agency.category.toLowerCase().includes(query) ||
+      agency.teamSize.toLowerCase().includes(query)
+    );
+  });
 
   const handleSelectAgency = (id: string) => {
     setSelectedAgencyIds((prev) =>
@@ -187,13 +181,13 @@ const AdminCompanyDashboard = () => {
 
   const handlePagination = (direction: 'prev' | 'next') => {
     if (direction === 'prev' && currentPage > 1) setCurrentPage(currentPage - 1);
-    if (direction === 'next' && currentPage < Math.ceil(agencies.length / rowsPerPage))
+    if (direction === 'next' && currentPage < Math.ceil(filteredAgencies.length / rowsPerPage))
       setCurrentPage(currentPage + 1);
   };
 
   if (!isAuthenticated) return null;
 
-  const paginatedData = agencies.slice(
+  const paginatedData = filteredAgencies.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
@@ -296,7 +290,7 @@ const AdminCompanyDashboard = () => {
                     <FaRegEdit size={20} />
                   </button>
                   <button
-                    onClick={() => handleBulkDelete()}
+                    onClick={handleBulkDelete}
                     className="px-2 py-1 text-sm text-black rounded ml-2"
                   >
                     <MdDelete size={20} />
@@ -316,13 +310,12 @@ const AdminCompanyDashboard = () => {
             Previous
           </button>
           <p>
-            Page {currentPage} of {Math.ceil(agencies.length / rowsPerPage)}
+            Page {currentPage} of {Math.ceil(filteredAgencies.length / rowsPerPage)}
           </p>
           <button
             onClick={() => handlePagination('next')}
-            disabled={currentPage === Math.ceil(agencies.length / rowsPerPage)}
-            className={`px-4 py-2 rounded ${currentPage === Math.ceil(agencies.length / rowsPerPage) ? 'bg-gray-300' : 'bg-blue-500 text-white hover:bg-blue-600'
-              }`}
+            disabled={currentPage === Math.ceil(filteredAgencies.length / rowsPerPage)}
+            className={`px-4 py-2 rounded ${currentPage === Math.ceil(filteredAgencies.length / rowsPerPage) ? 'bg-gray-300' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
           >
             Next
           </button>
@@ -383,8 +376,7 @@ const AdminCompanyDashboard = () => {
                 <label className="block text-gray-700">Rating</label>
                 <input
                   type="number"
-                  value={newCompany.rating}
-                  min="1"
+                  value={newCompany.rating}min="1"
                   max="5"
                   onChange={(e) => setNewCompany({ ...newCompany, rating: +e.target.value })}
                   className="w-full p-2 border rounded"
@@ -442,4 +434,3 @@ const AdminCompanyDashboard = () => {
 };
 
 export default AdminCompanyDashboard;
-

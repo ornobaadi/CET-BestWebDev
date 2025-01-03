@@ -101,7 +101,7 @@ export default function AgencyPage() {
   return (
     <section className="bg-gray-100 py-16">
       <div className="container mx-auto">
-        <div className="flex flex-col lg:flex-row">
+        <div className="flex flex-col lg:flex-row gap-5">
           <div className="w-full lg:w-1/4 mb-8 lg:mb-0">
             <FilterSection
               onFilterChange={applyFilters}

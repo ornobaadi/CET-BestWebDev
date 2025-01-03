@@ -36,9 +36,9 @@ export default function FilterSection({ onFilterChange, totalItems, filteredItem
           Clear all
         </button>
       </div>
-      
+
       <p className="text-sm text-gray-600 mb-4">Showing {filteredItemsCount} of {totalItems}</p>
-      
+
       <div className="mb-6">
         <label className="block text-sm font-medium">Location</label>
         <input
@@ -125,7 +125,7 @@ export default function FilterSection({ onFilterChange, totalItems, filteredItem
       <div className="mb-6">
         <label className="block text-sm font-medium mb-2">Budget</label>
         <div className="grid grid-cols-3 gap-2">
-          {['Any Price', '< $5,000', '< $20,000', '< $50,000', '< $100,000', '> $100,000'].map((price, idx) => (
+          {['Any Price', '< $5,000', '< $20,000', '< $50,000', '<$100,000', '>$100,000'].map((price, idx) => (
             <button
               key={idx}
               onClick={() => setRate(price)}
@@ -151,6 +151,88 @@ export default function FilterSection({ onFilterChange, totalItems, filteredItem
           <option value="100+">100+</option>
         </select>
       </div>
+
+      <div className="mb-10">
+        <label className="block text-sm font-medium my-5">Filter Seven</label>
+        <div className="flex items-center gap-4">
+          <input
+            type="range"
+            min="1"
+            max="100"
+            step="1"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <span className="w-8 text-center"></span>
+        </div>
+      </div>
+
+      <div className="mb-10">
+        <label className="block text-sm font-medium my-5">Filter Eight</label>
+        <div className="flex items-center gap-4">
+          <input
+            type="range"
+            min="1"
+            max="100"
+            step="1"
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <span className="w-8 text-center"></span>
+        </div>
+      </div>
+
+      <div className="mb-10">
+        <label className="block text-sm font-medium my-5">Filter Nine</label>
+        <label className="toggle">
+          <input type="checkbox" id="btnToggle" name="btnToggle" />
+          <span className="slider"></span>
+        </label>
+      </div>
+
+      <style jsx>{`
+  .toggle {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+
+  .toggle input {
+    display: none;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color:  #C0C0C0;
+    transition: 0.4s;
+    border-radius: 34px;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: #FFF;
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+
+  input:checked + .slider {
+    background-color: #000;
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+`}</style>
+
 
       <button
         onClick={() => onFilterChange({ location, teamSize, rate, category })}

@@ -77,7 +77,7 @@ export default function DevelopmentPage() {
                         alt={`${agency.name} logo`}
                         width={300}
                         height={150}
-                        className="mb-4"
+                        className="mb-4 w-[500px] h-[450px] object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = '/images/default-image.png';
                         }}
