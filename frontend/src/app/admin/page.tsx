@@ -42,12 +42,12 @@ export default function AdminLoginPage() {
           className="w-full mb-4 p-2 border rounded"
           required
         />
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">
+        <button type="submit" className="w-full bg-slate-900 text-white py-2 rounded">
           Login
         </button>
         <button
           type="button"
-          className="mt-2 text-sm text-blue-600 underline"
+          className="mt-2 text-sm text-slate-900 underline"
           onClick={() => alert('Reset password link sent!')}
         >
           Forgot Password?

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MdDelete } from "react-icons/md";
 import { FaRegEdit } from "react-icons/fa";
+import { IoSearch } from "react-icons/io5";
 
 interface Agency {
   _id: string;
@@ -33,6 +34,7 @@ const AdminDashboard = () => {
   const [editingAgencyId, setEditingAgencyId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const [newCompany, setNewCompany] = useState<Agency>({
     _id: '',
@@ -71,6 +73,17 @@ const AdminDashboard = () => {
     }
   };
 
+  const filteredAgencies = agencies.filter((agency) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      agency.name.toLowerCase().includes(query) ||
+      agency.location.toLowerCase().includes(query) ||
+      agency.category.toLowerCase().includes(query) ||
+      agency.teamSize.toLowerCase().includes(query)
+    );
+  });
+
+  // Rest of the functions remain the same
   const handleSelectAgency = (id: string) => {
     setSelectedAgencyIds((prev) =>
       prev.includes(id) ? prev.filter((agencyId) => agencyId !== id) : [...prev, id]
@@ -215,8 +228,8 @@ const AdminDashboard = () => {
         <ul className="space-y-4">
           {[
             { name: 'Dashboard', path: '/admin/dashboard' },
-            { name: 'Category', path: '/admin/dashboard/category' },
-            { name: 'Company', path: '/admin/dashboard/company' },
+            // { name: 'Category', path: '/admin/dashboard/category' },
+            // { name: 'Company', path: '/admin/dashboard/company' },
             { name: 'Quotes', path: '/admin/dashboard/quotes' },
             { name: 'User', path: '/admin/dashboard/user' },
             { name: 'Settings', path: '/admin/dashboard/settings' },
@@ -224,7 +237,7 @@ const AdminDashboard = () => {
             <li 
               key={section.name} 
               className={`p-2 rounded-md cursor-pointer ${
-                section.name === 'Dashboard' ? 'bg-blue-500 text-white' : 'text-gray-700 hover:bg-blue-100'
+                section.name === 'Dashboard' ? 'bg-slate-900 text-white' : 'text-gray-700 hover:bg-slate-100'
               }`}
             >
               <Link href={section.path}>{section.name}</Link>
@@ -241,27 +254,38 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        <div className="flex justify-between mb-6">
-        <button 
-            onClick={handleBulkDelete} 
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
-            disabled={isLoading || selectedAgencyIds.length === 0}
-          >
-            Bulk Delete
-          </button>
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleBulkDelete} 
+              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50"
+              disabled={isLoading || selectedAgencyIds.length === 0}
+            >
+              Bulk Delete ({selectedAgencyIds.length})
+            </button>
+            <div className="relative">
+              <IoSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              <input
+                type="text"
+                placeholder="Search companies..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border rounded-md w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
           <button 
             onClick={() => setAddCompanyModalOpen(true)} 
-            className="bg-slate-900 text-white px-4 py-2 rounded  disabled:opacity-50"
+            className="bg-slate-900 text-white px-4 py-2 rounded disabled:opacity-50"
             disabled={isLoading}
           >
             + Add Agency
           </button>
-          
         </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-500"></div>
           </div>
         ) : (
           <div className="overflow-x-auto bg-white shadow-md rounded">
@@ -286,7 +310,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {agencies.map((agency) => (
+                {filteredAgencies.map((agency) => (
                   <tr key={agency._id} className="border-b hover:bg-gray-50">
                     <td className="p-3">
                       <input 
@@ -298,7 +322,7 @@ const AdminDashboard = () => {
                     </td>
                     <td className="p-3">
                       <Image 
-                        src={agency.image ? `http://localhost:5000/${agency.image}` : '/placeholder-logo.png'} 
+                        src={agency.image ? `${BASE_URL}/${agency.image}` : '/placeholder-logo.png'} 
                         alt={`${agency.name} logo`}
                         width={40} 
                         height={40} 
@@ -451,7 +475,7 @@ const AdminDashboard = () => {
                     type="submit"
                     onClick={handleAddOrEditCompany}
                     disabled={isLoading}
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                    className="w-full bg-slate-900 text-white py-2 rounded hover:bg-slate-600 disabled:opacity-50"
                   >
                     {isLoading ? (
                       <span className="flex items-center justify-center">
